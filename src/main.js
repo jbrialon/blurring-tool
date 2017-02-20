@@ -10,6 +10,7 @@ let startPoint
 let endPoint
 let theMask
 let carBlurred
+
 // ----------------------------------------------------------------------------------------------------
 // Create the renderer
 // ----------------------------------------------------------------------------------------------------
@@ -19,6 +20,14 @@ let renderer = PIXI.autoDetectRenderer(
   {antialias: true, transparent: true, resolution: 1, autoResize: true}
 )
 document.body.appendChild(renderer.view)
+
+const button = document.createElement('button')
+button.innerHTML = 'get Image'
+button.onclick = () => {
+  renderer.render(stage)
+  console.log(renderer.view.toDataURL())
+}
+document.body.appendChild(button)
 
 // ----------------------------------------------------------------------------------------------------
 // Loader
@@ -59,13 +68,11 @@ function setup () {
   stage.on('mousedown', handleDown)
   stage.on('mouseup', handleUp)
   // render
-  // renderer.render(stage)
   window.requestAnimationFrame(render)
 }
 
 // startMove
 function handleDown (event) {
-  console.log('down:', event)
   startPoint = new PIXI.Point(event.data.global.x, event.data.global.y)
   stage.on('mousemove', handleMove)
   theMask.beginFill()
@@ -78,28 +85,8 @@ function handleMove (event) {
 }
 
 function handleUp (event) {
-  // endPoint = new PIXI.Point(event.data.global.x, event.data.global.y)
-  // theMask.drawRect(startPoint.x, startPoint.y, ((endPoint.x - startPoint.x) + 20), ((endPoint.y - startPoint.y) + 20))
   theMask.endFill()
   stage.off('mousemove', handleMove)
-  // let carBlurred = new PIXI.Sprite(
-  //   PIXI.loader.resources['./static/car.png'].texture
-  // )
-  //
-  // var blurFilter1 = new PIXI.filters.BlurFilter(3, 3)
-  // carBlurred.filters = [blurFilter1]
-  //
-  // // mask
-  // let theMask = new PIXI.Graphics()
-  // theMask.beginFill()
-  // theMask.drawRect(startPoint.x, startPoint.y, ((endPoint.x - startPoint.x) + 20), ((endPoint.y - startPoint.y) + 20))
-  // theMask.endFill()
-  // stage.addChild(theMask)
-  // carBlurred.mask = theMask
-  // stage.addChild(carBlurred)
-  //
-  // console.log(startPoint, endPoint)
-  // renderer.render(stage)
 }
 
 function render () {
