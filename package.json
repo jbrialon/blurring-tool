@@ -1,7 +1,7 @@
 {
   "name": "blurring-tool",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "blur part of an image and export it to base64",
   "author": "Jérém <jeremzor@gmail.com>",
   "private": true,
   "scripts": {
