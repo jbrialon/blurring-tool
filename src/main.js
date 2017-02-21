@@ -1,25 +1,29 @@
 import PIXI from 'pixi.js'
 
 // ----------------------------------------------------------------------------------------------------
-// default values
+// default letiables
 // ----------------------------------------------------------------------------------------------------
-let width = 550
-let height = 369
+const defaultwidth = 1280
+const defaultHeight = 600
 
 let startPoint
 let endPoint
 let theMask
-let carBlurred
+let pictureBlurred
 
 // ----------------------------------------------------------------------------------------------------
 // Create the renderer
 // ----------------------------------------------------------------------------------------------------
-let stage = new PIXI.Container()
-let renderer = PIXI.autoDetectRenderer(
-  width, height,
+const stage = new PIXI.Container()
+const renderer = PIXI.autoDetectRenderer(
+  defaultwidth, defaultHeight,
   {antialias: true, transparent: true, resolution: 1, autoResize: true}
 )
 document.body.appendChild(renderer.view)
+
+// ----------------------------------------------------------------------------------------------------
+// Create the button
+// ----------------------------------------------------------------------------------------------------
 
 const button = document.createElement('button')
 button.innerHTML = 'get Image'
@@ -38,31 +42,37 @@ PIXI.loader
   .load(setup)
 
 // ----------------------------------------------------------------------------------------------------
-// setup the animation
+// function: Setup the tool
 // ----------------------------------------------------------------------------------------------------
 function setup () {
-  console.log('setup')
+  const pictureSize = {
+    width: PIXI.loader.resources['./static/car.png'].data.width,
+    height: PIXI.loader.resources['./static/car.png'].data.height
+  }
 
-  // car
-  let car = new PIXI.Sprite(
+  renderer.resize(pictureSize.width, pictureSize.height)
+  renderer.render(stage)
+
+  // picture
+  let picture = new PIXI.Sprite(
     PIXI.loader.resources['./static/car.png'].texture
   )
-  stage.addChild(car)
+  stage.addChild(picture)
   stage.interactive = true
 
-  carBlurred = new PIXI.Sprite(
+  pictureBlurred = new PIXI.Sprite(
     PIXI.loader.resources['./static/car.png'].texture
   )
 
-  var blurFilter1 = new PIXI.filters.BlurFilter(3, 3)
-  carBlurred.filters = [blurFilter1]
-  stage.addChild(carBlurred)
+  let blurFilter1 = new PIXI.filters.BlurFilter(3, 3)
+  pictureBlurred.filters = [blurFilter1]
+  stage.addChild(pictureBlurred)
 
   theMask = new PIXI.Graphics()
   theMask.beginFill()
   theMask.drawRect(0, 0, 1, 1)
   theMask.endFill()
-  carBlurred.mask = theMask
+  pictureBlurred.mask = theMask
 
   stage.addChild(theMask)
   stage.on('mousedown', handleDown)
@@ -71,12 +81,18 @@ function setup () {
   window.requestAnimationFrame(render)
 }
 
-// startMove
+// ----------------------------------------------------------------------------------------------------
+// Event: startMove
+// ----------------------------------------------------------------------------------------------------
 function handleDown (event) {
   startPoint = new PIXI.Point(event.data.global.x, event.data.global.y)
   stage.on('mousemove', handleMove)
   theMask.beginFill()
 }
+
+// ----------------------------------------------------------------------------------------------------
+// Event: HandleMove
+// ----------------------------------------------------------------------------------------------------
 
 function handleMove (event) {
   endPoint = new PIXI.Point(event.data.global.x, event.data.global.y)
@@ -84,10 +100,17 @@ function handleMove (event) {
   theMask.drawRect(startPoint.x, startPoint.y, ((endPoint.x - startPoint.x) + 20), ((endPoint.y - startPoint.y) + 20))
 }
 
+// ----------------------------------------------------------------------------------------------------
+// Event: HandleUp
+// ----------------------------------------------------------------------------------------------------
 function handleUp (event) {
   theMask.endFill()
   stage.off('mousemove', handleMove)
 }
+
+// ----------------------------------------------------------------------------------------------------
+// Function: render
+// ----------------------------------------------------------------------------------------------------
 
 function render () {
   renderer.render(stage)
